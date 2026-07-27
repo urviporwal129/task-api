@@ -16,6 +16,8 @@ This is a simple Task Management API developed using FastAPI as part of my FlyRa
 - Python
 - FastAPI
 - Pydantic
+- SQLite
+- DB Browser for SQLite
 - Uvicorn
 
 ## How to Run
@@ -49,6 +51,20 @@ http://127.0.0.1:8000/docs
 | POST | `/tasks` |
 | PUT | `/tasks/{task_id}` |
 | DELETE | `/tasks/{task_id}` |
+
+## Database Verification
+
+To verify that the API reads directly from the SQLite database, I manually updated the database using DB Browser for SQLite while the FastAPI server was still running. Refreshing the API immediately reflected the changes without restarting the server.
+
+### SQL Query Used
+
+```sql
+UPDATE tasks
+SET title = 'Updated from DB Browser'
+WHERE id = 1;
+```
+
+Result: After refreshing the GET /tasks/1 endpoint, the API returned the updated task title "Updated from DB Browser" without requiring a server restart.
 
 ## Status Codes
 
