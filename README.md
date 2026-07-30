@@ -74,6 +74,13 @@ Result: After refreshing the GET /tasks/1 endpoint, the API returned the updated
 - 400 - Bad Request
 - 404 - Not Found
 
+## PostgreSQL Setup
+
+Run PostgreSQL using Docker:
+
+```bash
+docker run --name taskdb -e POSTGRES_PASSWORD=dev -e POSTGRES_DB=tasks -p 5432:5432 -v taskdata:/var/lib/postgresql/data -d postgres:16
+
 ## Author
 
 Urvi Porwal
