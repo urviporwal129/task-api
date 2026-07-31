@@ -7,41 +7,8 @@ from database import(
 )
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import sqlite3
 
 app = FastAPI()
-
-conn = sqlite3.connect("tasks.db", check_same_thread=False)
-cursor = conn.cursor()
-
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS tasks (
-    id INTEGER PRIMARY KEY,
-    title TEXT NOT NULL,
-    done BOOLEAN NOT NULL
-)
-""")
-
-cursor.execute("SELECT COUNT(*) FROM tasks")
-count = cursor.fetchone()[0]
-
-if count == 0:
-    cursor.executemany("""
-    INSERT INTO tasks (title, done)
-    VALUES (?, ?)
-    """, [
-        ("Learn FastAPI", False),
-        ("Build CRUD API", False),
-        ("Submit Assignment", False)
-    ])
-
-conn.commit()
-
-tasks = [
-    {"id": 1, "title": "Learn FastAPI", "done": False},
-    {"id": 2, "title": "Build CRUD API", "done": False},
-    {"id": 3, "title": "Submit Assignment", "done": False},
-]
 
 @app.get("/")
 def home():
@@ -113,5 +80,3 @@ def delete_existing_task(task_id: int):
 
     return
 
-    conn.commit()
-    return
