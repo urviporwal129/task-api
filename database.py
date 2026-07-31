@@ -9,6 +9,48 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 def get_connection():
     return psycopg.connect(DATABASE_URL)
 
+def get_all_tasks():
+    conn = get_connection()
+
+    with conn.cursor() as cur:
+        cur.execute("SELECT * FROM tasks;")
+        rows = cur.fetchall()
+
+    conn.close()
+
+    tasks = []
+
+    for row in rows:
+        tasks.append({
+            "id": row[0],
+            "title": row[1],
+            "done": row[2]
+        })
+
+    return tasks
+
+def get_task_by_id(task_id):
+    conn = get_connection()
+
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT * FROM tasks WHERE id = %s;",
+            (task_id,)
+        )
+
+        row = cur.fetchone()
+
+    conn.close()
+
+    if row is None:
+        return None
+
+    return {
+        "id": row[0],
+        "title": row[1],
+        "done": row[2]
+    }
+
 if __name__ == "__main__":
     conn = get_connection()
 
