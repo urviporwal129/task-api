@@ -51,6 +51,81 @@ def get_task_by_id(task_id):
         "done": row[2]
     }
 
+def create_task(title, done):
+    conn = get_connection()
+
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            INSERT INTO tasks (title, done)
+            VALUES (%s, %s)
+            RETURNING id, title, done;
+            """,
+            (title, done)
+        )
+
+        row = cur.fetchone()
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "id": row[0],
+        "title": row[1],
+        "done": row[2]
+    }
+
+def update_task(task_id, title, done):
+    conn = get_connection()
+
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            UPDATE tasks
+            SET title = %s, done = %s
+            WHERE id = %s
+            RETURNING id, title, done;
+            """,
+            (title, done, task_id)
+        )
+
+        row = cur.fetchone()
+
+    conn.commit()
+    conn.close()
+
+    if row is None:
+        return None
+
+    return {
+        "id": row[0],
+        "title": row[1],
+        "done": row[2]
+    }
+
+def delete_task(task_id):
+    conn = get_connection()
+
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            DELETE FROM tasks
+            WHERE id = %s
+            RETURNING id;
+            """,
+            (task_id,)
+        )
+
+        row = cur.fetchone()
+
+    conn.commit()
+    conn.close()
+
+    if row is None:
+        return False
+
+    return True
+    
 if __name__ == "__main__":
     conn = get_connection()
 

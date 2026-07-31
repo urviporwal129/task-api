@@ -1,4 +1,10 @@
-from database import get_all_tasks, get_task_by_id
+from database import(
+    get_all_tasks,
+    get_task_by_id,
+    create_task,
+    update_task,
+    delete_task
+)
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import sqlite3
@@ -68,68 +74,44 @@ class Task(BaseModel):
     done: bool
 
 @app.post("/tasks", status_code=201)
-def create_task(task: Task):
+def create_new_task(task: Task):
     if task.title.strip() == "":
         raise HTTPException(
-        status_code=400,
-        detail="Title cannot be empty"
+            status_code=400,
+            detail="Title cannot be empty"
         )
-    cursor.execute(
-    "INSERT INTO tasks (title, done) VALUES (?, ?)",
-    (task.title, False)
-)
 
-    conn.commit()
-
-    new_id = cursor.lastrowid
-
-    return {
-        "id": new_id,
-        "title": task.title,
-        "done": False
-    }
+    return create_task(task.title, task.done)
 
 @app.put("/tasks/{task_id}")
-def update_task(task_id: int, updated_task: Task):
+def update_existing_task(task_id: int, updated_task: Task):
 
-    cursor.execute(
-        """
-        UPDATE tasks
-        SET title = ?, done = ?
-        WHERE id = ?
-        """,
-        (updated_task.title, updated_task.done, task_id)
+    task = update_task(
+        task_id,
+        updated_task.title,
+        updated_task.done
     )
 
-    conn.commit()
-
-    if cursor.rowcount == 0:
+    if task is None:
         raise HTTPException(
             status_code=404,
-            detail=f"Task {task_id} not found"
+            detail="Task not found"
         )
 
-    conn.commit()
-
-    return {
-        "id": task_id,
-        "title": updated_task.title,
-        "done": updated_task.done
-    }
+    return task
 
 @app.delete("/tasks/{task_id}", status_code=204)
-def delete_task(task_id: int):
+def delete_existing_task(task_id: int):
 
-    cursor.execute(
-        "DELETE FROM tasks WHERE id = ?",
-        (task_id,)
-    )
+    deleted = delete_task(task_id)
 
-    if cursor.rowcount == 0:
+    if not deleted:
         raise HTTPException(
             status_code=404,
-            detail=f"Task {task_id} not found"
+            detail="Task not found"
         )
+
+    return
 
     conn.commit()
     return
