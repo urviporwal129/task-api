@@ -1,3 +1,4 @@
+from supabase_client import supabase
 from database import(
     get_all_tasks,
     get_task_by_id,
