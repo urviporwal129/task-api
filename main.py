@@ -81,3 +81,46 @@ def delete_existing_task(task_id: int):
 
     return
 
+class AuthRequest(BaseModel):
+    email: str
+    password: str
+
+@app.post("/auth/signup")
+def signup(user: AuthRequest):
+
+    if not user.email or not user.password:
+        raise HTTPException(
+            status_code=400,
+            detail="Email and password required"
+        )
+
+    response = supabase.auth.sign_up(
+        {
+            "email": user.email,
+            "password": user.password
+        }
+    )
+
+    return response
+
+@app.post("/auth/login")
+def login(user: AuthRequest):
+
+    if not user.email or not user.password:
+        raise HTTPException(
+            status_code=400,
+            detail="Email and password required"
+        )
+
+    response = supabase.auth.sign_in_with_password(
+        {
+            "email": user.email,
+            "password": user.password
+        }
+    )
+
+    return response
+
+@app.get("/test")
+def test():
+    return {"message": "API is running"}
