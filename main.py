@@ -1,3 +1,4 @@
+from fastapi.responses import JSONResponse
 from supabase_client import supabase
 from database import(
     get_all_tasks,
@@ -6,10 +7,12 @@ from database import(
     update_task,
     delete_task
 )
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header, Security
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
 app = FastAPI()
+security = HTTPBearer(auto_error=False)
 
 @app.get("/")
 def home():
@@ -121,6 +124,26 @@ def login(user: AuthRequest):
 
     return response
 
-@app.get("/test")
-def test():
-    return {"message": "API is running"}
+@app.get("/public/info")
+def public_info():
+    return {
+        "message": "Welcome stranger! This info is public."
+    }
+
+@app.get("/protected/profile")
+def protected_profile(
+    credentials: HTTPAuthorizationCredentials | None = Security(security)
+):
+    if credentials is None:
+        return JSONResponse(
+            status_code=401,
+            content={"error": "Access token required"}
+        )
+
+    token = credentials.credentials
+
+    return {
+        "message": "Protected endpoint reached",
+        "token": token
+    }
+
