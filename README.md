@@ -128,11 +128,11 @@ After improving my prompt, I clarified the project structure, required environme
 
 ## Swagger UI Overview
 
-![Swagger UI Overview](assests/Swagger-UI-Overview.png)
+<img src="https://raw.githubusercontent.com/urviporwal129/task-api/master/assests/Swagger-UI-Overview.png" width="800">
 
 ## Bearer Authentication
 
-![Bearer Authentication](assests/Bearer-Authentication.png)
+<img src="https://raw.githubusercontent.com/urviporwal129/task-api/master/assests/Bearer-Authentication.png" width="800">
 
 ## Author
 
