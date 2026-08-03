@@ -126,6 +126,14 @@ I did not clearly specify the expected project folder structure or explicitly me
 
 After improving my prompt, I clarified the project structure, required environment file names, and Docker configuration. The regenerated solution was closer to my implementation and required fewer manual corrections.
 
+## Swagger UI Overview
+
+![Swagger UI Overview](assests/Swagger-UI-Overview.png)
+
+## Bearer Authentication
+
+![Bearer Authentication](assesets/Bearer-Authentication.png)
+
 ## Author
 
 Urvi Porwal
