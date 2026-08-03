@@ -132,7 +132,7 @@ After improving my prompt, I clarified the project structure, required environme
 
 ## Bearer Authentication
 
-![Bearer Authentication](assesets/Bearer-Authentication.png)
+![Bearer Authentication](assests/Bearer-Authentication.png)
 
 ## Author
 
