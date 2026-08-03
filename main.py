@@ -142,8 +142,10 @@ def protected_profile(
 
     token = credentials.credentials
 
-    return {
-        "message": "Protected endpoint reached",
-        "token": token
-    }
+    user = supabase.auth.get_user(token)
 
+    return {
+        "id": user.user.id,
+        "email": user.user.email,
+        "created_at": user.user.created_at
+    }
