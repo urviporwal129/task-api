@@ -7,12 +7,11 @@ from database import(
     update_task,
     delete_task
 )
-from fastapi import FastAPI, HTTPException, Header, Security
+from fastapi import FastAPI, HTTPException, Security, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 
 app = FastAPI()
-security = HTTPBearer(auto_error=False)
 
 @app.get("/")
 def home():
@@ -130,22 +129,49 @@ def public_info():
         "message": "Welcome stranger! This info is public."
     }
 
-@app.get("/protected/profile")
-def protected_profile(
+security = HTTPBearer(auto_error=False)
+
+def get_current_user(
     credentials: HTTPAuthorizationCredentials | None = Security(security)
 ):
     if credentials is None:
-        return JSONResponse(
-            status_code=401,
-            content={"error": "Access token required"}
-        )
+        raise HTTPException(
+        status_code=401,
+        detail="Access token required"
+)
 
     token = credentials.credentials
+    try:
+        user = supabase.auth.get_user(token)
+        return user
+    except Exception:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or expired token"
+        )
 
-    user = supabase.auth.get_user(token)
-
-    return {
+@app.get("/protected/profile")
+def protected_profile(
+    user = Depends(get_current_user)
+):
+         return {
         "id": user.user.id,
         "email": user.user.email,
         "created_at": user.user.created_at
     }
+
+@app.post("/auth/logout", status_code=204)
+def logout(
+    user = Depends(get_current_user)
+):
+    supabase.auth.sign_out()
+    return
+
+@app.get("/protected/dashboard")
+def dashboard(
+    user = Depends(get_current_user)
+):
+    return {
+    "message": "Welcome to your dashboard!",
+    "email": user.user.email
+}
